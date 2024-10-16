@@ -1,0 +1,280 @@
+using System;
+using System.Collections.Generic;
+
+public interface ICommand
+{
+    void Execute();
+    void Undo();
+}
+
+public class Light
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("Light is On.");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("Light is Off.");
+    }
+}
+
+public class Door
+{
+    public void Open()
+    {
+        Console.WriteLine("Door is Open.");
+    }
+
+    public void Close()
+    {
+        Console.WriteLine("Door is Closed.");
+    }
+}
+
+public class Thermostat
+{
+    private int _temperature = 20;
+
+    public void IncreaseTemperature()
+    {
+        _temperature += 2;
+        Console.WriteLine($"Temperature increased to {_temperature}°C.");
+    }
+
+    public void DecreaseTemperature()
+    {
+        _temperature -= 2;
+        Console.WriteLine($"Temperature decreased to {_temperature}°C.");
+    }
+}
+
+public class TV
+{
+    public void TurnOn()
+    {
+        Console.WriteLine("TV is On.");
+    }
+
+    public void TurnOff()
+    {
+        Console.WriteLine("TV is Off.");
+    }
+}
+
+public class LightOnCommand : ICommand
+{
+    private Light _light;
+
+    public LightOnCommand(Light light)
+    {
+        _light = light;
+    }
+
+    public void Execute()
+    {
+        _light.TurnOn();
+    }
+
+    public void Undo()
+    {
+        _light.TurnOff();
+    }
+}
+
+public class LightOffCommand : ICommand
+{
+    private Light _light;
+
+    public LightOffCommand(Light light)
+    {
+        _light = light;
+    }
+
+    public void Execute()
+    {
+        _light.TurnOff();
+    }
+
+    public void Undo()
+    {
+        _light.TurnOn();
+    }
+}
+
+public class DoorOpenCommand : ICommand
+{
+    private Door _door;
+
+    public DoorOpenCommand(Door door)
+    {
+        _door = door;
+    }
+
+    public void Execute()
+    {
+        _door.Open();
+    }
+
+    public void Undo()
+    {
+        _door.Close();
+    }
+}
+
+public class DoorCloseCommand : ICommand
+{
+    private Door _door;
+
+    public DoorCloseCommand(Door door)
+    {
+        _door = door;
+    }
+
+    public void Execute()
+    {
+        _door.Close();
+    }
+
+    public void Undo()
+    {
+        _door.Open();
+    }
+}
+
+public class IncreaseTemperatureCommand : ICommand
+{
+    private Thermostat _thermostat;
+
+    public IncreaseTemperatureCommand(Thermostat thermostat)
+    {
+        _thermostat = thermostat;
+    }
+
+    public void Execute()
+    {
+        _thermostat.IncreaseTemperature();
+    }
+
+    public void Undo()
+    {
+        _thermostat.DecreaseTemperature();
+    }
+}
+
+public class DecreaseTemperatureCommand : ICommand
+{
+    private Thermostat _thermostat;
+
+    public DecreaseTemperatureCommand(Thermostat thermostat)
+    {
+        _thermostat = thermostat;
+    }
+
+    public void Execute()
+    {
+        _thermostat.DecreaseTemperature();
+    }
+
+    public void Undo()
+    {
+        _thermostat.IncreaseTemperature();
+    }
+}
+
+public class TVOnCommand : ICommand
+{
+    private TV _tv;
+
+    public TVOnCommand(TV tv)
+    {
+        _tv = tv;
+    }
+
+    public void Execute()
+    {
+        _tv.TurnOn();
+    }
+
+    public void Undo()
+    {
+        _tv.TurnOff();
+    }
+}
+
+public class TVOffCommand : ICommand
+{
+    private TV _tv;
+
+    public TVOffCommand(TV tv)
+    {
+        _tv = tv;
+    }
+
+    public void Execute()
+    {
+        _tv.TurnOff();
+    }
+
+    public void Undo()
+    {
+        _tv.TurnOn();
+    }
+}
+
+public class RemoteControl
+{
+    private Stack<ICommand> _commandHistory = new Stack<ICommand>();
+
+    public void ExecuteCommand(ICommand command)
+    {
+        command.Execute();
+        _commandHistory.Push(command);
+    }
+
+    public void UndoLastCommand()
+    {
+        if (_commandHistory.Count > 0)
+        {
+            ICommand lastCommand = _commandHistory.Pop();
+            lastCommand.Undo();
+        }
+        else
+        {
+            Console.WriteLine("No command to undo.");
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Light livingRoomLight = new Light();
+        Door frontDoor = new Door();
+        Thermostat thermostat = new Thermostat();
+        TV tv = new TV();
+
+        ICommand lightOn = new LightOnCommand(livingRoomLight);
+        ICommand lightOff = new LightOffCommand(livingRoomLight);
+        ICommand doorOpen = new DoorOpenCommand(frontDoor);
+        ICommand doorClose = new DoorCloseCommand(frontDoor);
+        ICommand increaseTemp = new IncreaseTemperatureCommand(thermostat);
+        ICommand decreaseTemp = new DecreaseTemperatureCommand(thermostat);
+        ICommand tvOn = new TVOnCommand(tv);
+        ICommand tvOff = new TVOffCommand(tv);
+
+        RemoteControl remote = new RemoteControl();
+
+        remote.ExecuteCommand(lightOn);
+        remote.ExecuteCommand(doorOpen);
+        remote.ExecuteCommand(increaseTemp);
+        remote.ExecuteCommand(tvOn);
+
+        remote.UndoLastCommand();
+        remote.UndoLastCommand();
+        remote.UndoLastCommand();
+        remote.UndoLastCommand();
+    }
+}
