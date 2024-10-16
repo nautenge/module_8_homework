@@ -1,0 +1,116 @@
+using System;
+
+public abstract class Beverage
+{
+    public void PrepareRecipe()
+    {
+        BoilWater();
+        Brew();
+        PourInCup();
+        if (CustomerWantsCondiments())
+        {
+            AddCondiments();
+        }
+    }
+
+    public void BoilWater()
+    {
+        Console.WriteLine("Boiling water");
+    }
+
+    public void PourInCup()
+    {
+        Console.WriteLine("Pouring into cup");
+    }
+
+    public abstract void Brew();
+    public abstract void AddCondiments();
+
+    public virtual bool CustomerWantsCondiments()
+    {
+        return true;
+    }
+
+    protected string GetValidAnswer()
+    {
+        string answer;
+        do
+        {
+            Console.Write("Would you like condiments (y/n)? ");
+            answer = Console.ReadLine().ToLower();
+        } while (answer != "y" && answer != "n");
+
+        return answer;
+    }
+}
+
+public class Tea : Beverage
+{
+    public override void Brew()
+    {
+        Console.WriteLine("Steeping the tea");
+    }
+
+    public override void AddCondiments()
+    {
+        Console.WriteLine("Adding lemon");
+    }
+}
+
+public class Coffee : Beverage
+{
+    public override void Brew()
+    {
+        Console.WriteLine("Dripping coffee through filter");
+    }
+
+    public override void AddCondiments()
+    {
+        Console.WriteLine("Adding sugar and milk");
+    }
+
+    public override bool CustomerWantsCondiments()
+    {
+        Console.Write("Would you like sugar and milk with your coffee (y/n)? ");
+        string answer = GetValidAnswer();
+        return answer == "y";
+    }
+}
+
+public class HotChocolate : Beverage
+{
+    public override void Brew()
+    {
+        Console.WriteLine("Mixing chocolate powder with water");
+    }
+
+    public override void AddCondiments()
+    {
+        Console.WriteLine("Adding whipped cream");
+    }
+
+    public override bool CustomerWantsCondiments()
+    {
+        Console.Write("Would you like whipped cream with your hot chocolate (y/n)? ");
+        string answer = GetValidAnswer();
+        return answer == "y";
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Beverage tea = new Tea();
+        Console.WriteLine("Making tea...");
+        tea.PrepareRecipe();
+
+        Console.WriteLine("\nMaking coffee...");
+        Beverage coffee = new Coffee();
+        coffee.PrepareRecipe();
+
+        Console.WriteLine("\nMaking hot chocolate...");
+        Beverage hotChocolate = new HotChocolate();
+        hotChocolate.PrepareRecipe();
+    }
+}
